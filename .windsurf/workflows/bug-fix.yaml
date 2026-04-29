@@ -1,0 +1,89 @@
+name: bug-fix-workflow
+description: Processo estruturado para correção de bugs no blogFascinatus
+version: 1.0.0
+
+triggers:
+  - command: "/bugfix"
+  - pattern: "corrigir bug|fix issue"
+
+steps:
+  step_1:
+    name: "Análise do Bug"
+    skill: "debug"
+    inputs:
+      - error_description: "${USER_INPUT}"
+      - stack_trace: "${CONTEXT.stack}"
+      - affected_files: "${CONTEXT.files}"
+    outputs:
+      - root_cause: "identified"
+      - severity: "critical|high|medium|low"
+      - affected_scope: "files"
+
+  step_2:
+    name: "Identificar Causa Raiz"
+    skill: "architectural-analysis"
+    depends_on: "step_1"
+    condition: "${step_1.severity == 'critical'}"
+    inputs:
+      - code_analysis: true
+      - data_flow_check: true
+    outputs:
+      - root_cause_confirmed: "boolean"
+      - related_issues: "list"
+
+  step_3:
+    name: "Implementar Correção"
+    skill: "code-generation"
+    depends_on: "step_1"
+    inputs:
+      - fix_type: "hotfix|proper-fix"
+      - maintain_tests: true
+    outputs:
+      - files_modified: "list"
+      - tests_updated: "boolean"
+    rules: ["security-rules", "style-rules"]
+
+  step_4:
+    name: "Testes de Regressão"
+    skill: "testing"
+    depends_on: "step_3"
+    inputs:
+      - test_scope: "affected|full"
+      - priority: "${step_1.severity}"
+    outputs:
+      - test_result: "PASS|FAIL"
+      - coverage_impact: "percentage"
+    on_failure: "retry_with_changes"
+
+  step_5:
+    name: "Validação de Segurança"
+    skill: "debug"
+    depends_on: "step_3"
+    condition: "${step_1.severity == 'critical'}"
+    inputs:
+      - security_scan: true
+      - check_vulnerabilities: true
+    rules: ["security-rules"]
+
+  step_6:
+    name: "Build e Verificação"
+    skill: "deployment"
+    depends_on: ["step_4", "step_5"]
+    inputs:
+      - build_command: "npm run build"
+      - type_check: "npm run type-check"
+    on_failure: "abort"
+
+success_criteria:
+  - "Bug corrigido sem regressões"
+  - "Testes passando"
+  - "Build estável"
+  - "Nenhuma vulnerabilidade introduzida"
+
+notifications:
+  - event: "success"
+    message: "✅ Bug corrigido - Severity: ${step_1.severity}"
+  
+  - event: "failure"
+    message: "❌ Correção falhou no step: ${failed_step}"
+    escalation: "manual_review"

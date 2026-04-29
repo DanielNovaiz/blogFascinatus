@@ -1,0 +1,125 @@
+name: release-workflow
+description: Fluxo completo de release para produção no blogFascinatus
+version: 1.0.0
+
+triggers:
+  - command: "/release"
+  - pattern: "fazer deploy|lançar versão"
+
+steps:
+  step_1:
+    name: "Validação Pre-Release"
+    skill: "deployment"
+    inputs:
+      - check_migrations: true
+      - check_env_vars: true
+      - check_secrets: true
+    outputs:
+      - ready: "boolean"
+      - blockers: "list"
+    on_failure: "abort"
+
+  step_2:
+    name: "Testes Completos"
+    skill: "testing"
+    depends_on: "step_1"
+    inputs:
+      - test_scope: "full"
+      - coverage_min: "70"
+    outputs:
+      - test_result: "PASS|FAIL"
+      - coverage: "percentage"
+    on_failure: "abort"
+
+  step_3:
+    name: "Security Scan"
+    skill: "debug"
+    depends_on: "step_1"
+    parallel_allowed: true
+    inputs:
+      - dependency_check: "npm audit"
+      - vulnerability_scan: true
+    rules: ["security-rules"]
+    on_failure: "abort"
+
+  step_4:
+    name: "Build de Produção"
+    skill: "deployment"
+    depends_on: ["step_2", "step_3"]
+    inputs:
+      - environment: "production"
+      - optimize: true
+    outputs:
+      - build_size: "kb"
+      - build_time: "seconds"
+
+  step_5:
+    name: "Performance Check"
+    skill: "architectural-analysis"
+    depends_on: "step_4"
+    inputs:
+      - lighthouse_score: true
+      - bundle_analysis: true
+    outputs:
+      - performance_score: "number"
+      - meets_targets: "boolean"
+    rules: ["performance-rules"]
+
+  step_6:
+    name: "Deploy para Preview"
+    skill: "deployment"
+    depends_on: "step_5"
+    inputs:
+      - target: "preview"
+      - smoke_tests: true
+    outputs:
+      - preview_url: "url"
+      - smoke_test_result: "PASS|FAIL"
+
+  step_7:
+    name: "Validação Manual"
+    skill: "deployment"
+    depends_on: "step_6"
+    approval_required: true
+    approvers: ["product-owner"]
+    timeout: "2h"
+    inputs:
+      - preview_url: "${step_6.preview_url}"
+      - checklist: 
+        - "Checkout funciona"
+        - "Webhook Stripe ok"
+        - "Admin acessível"
+        - "Produtos listando"
+
+  step_8:
+    name: "Deploy Produção"
+    skill: "deployment"
+    depends_on: "step_7"
+    inputs:
+      - target: "production"
+      - strategy: "blue-green"
+    outputs:
+      - production_url: "url"
+      - deploy_time: "timestamp"
+
+success_criteria:
+  - "Todos testes passam"
+  - "Security scan limpo"
+  - "Performance dentro dos targets"
+  - "Aprovação manual concedida"
+  - "Deploy em produção sem erros"
+
+notifications:
+  - event: "success"
+    channel: "log"
+    message: "🚀 blogFascinatus deployado com sucesso! ${step_8.production_url}"
+  
+  - event: "failure"
+    channel: "log"
+    message: "❌ Release falhou: ${failed_step}"
+    action: "rollback_preview"
+
+rollback:
+  - condition: "${step_8.status == 'failure'}"
+  - action: "restore_previous_version"
+  - notification: "Rollback executado"

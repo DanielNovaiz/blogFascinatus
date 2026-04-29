@@ -1,0 +1,82 @@
+name: feature-development-workflow
+description: Fluxo completo para desenvolvimento de novas features no blogFascinatus
+version: 1.0.0
+
+triggers:
+  - command: "/feature"
+  - pattern: "criar nova feature"
+
+steps:
+  step_1:
+    name: "Análise de Requisitos"
+    skill: "architectural-analysis"
+    inputs:
+      - feature_description: "${USER_INPUT}"
+      - project_context: "blogFascinatus - Next.js + Supabase + Stripe"
+    outputs:
+      - approach: "server-components|client-components|hybrid"
+      - data_flow: "diagram"
+    rules: ["architecture-rules"]
+
+  step_2:
+    name: "Geração de Código"
+    skill: "code-generation"
+    depends_on: "step_1"
+    inputs:
+      - approach: "${step_1.approach}"
+      - components: "${step_1.components}"
+    outputs:
+      - files_created: "list"
+      - tests_needed: "boolean"
+    rules: ["style-rules", "architecture-rules"]
+
+  step_3:
+    name: "Type Check"
+    skill: "code-generation"
+    depends_on: "step_2"
+    inputs:
+      - command: "npm run type-check"
+    on_failure: "request_changes"
+
+  step_4:
+    name: "Geração de Testes"
+    skill: "testing"
+    depends_on: "step_2"
+    condition: "${step_2.tests_needed == true}"
+    inputs:
+      - coverage_target: "70%"
+      - test_type: "unit|integration"
+    outputs:
+      - test_files: "generated"
+    rules: ["testing-rules"]
+
+  step_5:
+    name: "Validação de Build"
+    skill: "deployment"
+    depends_on: ["step_3", "step_4"]
+    inputs:
+      - command: "npm run build"
+    on_failure: "abort"
+
+  step_6:
+    name: "Documentação"
+    skill: "documentation"
+    depends_on: "step_5"
+    condition: "${step_1.approach == 'hybrid'}"
+    inputs:
+      - doc_type: "inline-comments"
+      - update_readme: false
+
+success_criteria:
+  - "Código segue style-rules"
+  - "TypeScript sem erros"
+  - "Build completo com sucesso"
+  - "Testes gerados (se necessário)"
+
+notifications:
+  - event: "success"
+    message: "✅ Feature desenvolvida com sucesso"
+  
+  - event: "failure"
+    message: "❌ Falha no step: ${failed_step}"
+    action: "require_fix"

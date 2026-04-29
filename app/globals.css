@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Paleta atualizada - tons naturais e terrosos */
+  --color-ivory-50: #fefefe;
+  --color-ivory-100: #faf9f7;
+  --color-ivory-200: #f5f3ef;
+  --color-ivory-300: #ede9e2;
+
+  --color-straw-50: #fdfcf5;
+  --color-straw-100: #f9f5e3;
+  --color-straw-200: #f2ebc7;
+  --color-straw-300: #e8dda0;
+  --color-straw-400: #dcc873;
+  --color-straw-500: #c9b350;
+  --color-straw-600: #a89440;
+
+  --color-beige-50: #fdfbf7;
+  --color-beige-100: #f7f2e9;
+  --color-beige-200: #ece2d1;
+  --color-beige-300: #deccb0;
+  --color-beige-400: #d1b892;
+  --color-beige-500: #c4a57a;
+  --color-beige-600: #a88b62;
+  --color-beige-700: #8b7152;
+  --color-beige-800: #705a45;
+  --color-beige-900: #564435;
+
+  --color-earth-50: #f9f6f2;
+  --color-earth-100: #efe8df;
+  --color-earth-200: #e0d0c0;
+  --color-earth-300: #cbb59d;
+  --color-earth-400: #b89778;
+  --color-earth-500: #a47d5a;
+  --color-earth-600: #8a6649;
+  --color-earth-700: #70523d;
+  --color-earth-800: #594335;
+  --color-earth-900: #433025;
+
+  --color-peach-50: #fdf8f5;
+  --color-peach-100: #f9ebe4;
+  --color-peach-200: #f2d5c7;
+  --color-peach-300: #e8b8a3;
+  --color-peach-400: #d99578;
+  --color-peach-500: #c97a58;
+  --color-peach-600: #a86245;
+  --color-peach-700: #855038;
+  --color-peach-800: #6b4232;
+  --color-peach-900: #523528;
+
+  --color-lilac-50: #fdfbfd;
+  --color-lilac-100: #f7f0f7;
+  --color-lilac-200: #ede0ed;
+  --color-lilac-300: #dec8de;
+  --color-lilac-400: #c8a8c8;
+  --color-lilac-500: #b088b0;
+  --color-lilac-600: #966a96;
+  --color-lilac-700: #7a557a;
+  --color-lilac-800: #614661;
+  --color-lilac-900: #4a364a;
+
+  --color-mint-50: #f6faf7;
+  --color-mint-100: #e8f5ea;
+  --color-mint-200: #c8e8cd;
+  --color-mint-300: #9dd6a6;
+  --color-mint-400: #72bf7e;
+  --color-mint-500: #4ca85c;
+  --color-mint-600: #3a8a48;
+  --color-mint-700: #306e3b;
+  --color-mint-800: #275731;
+  --color-mint-900: #1f4226;
+
+  --color-forest-50: #f0f4f1;
+  --color-forest-100: #dce8de;
+  --color-forest-200: #b8d2bd;
+  --color-forest-300: #8eb596;
+  --color-forest-400: #669872;
+  --color-forest-500: #467a53;
+  --color-forest-600: #356240;
+  --color-forest-700: #2a4f34;
+  --color-forest-800: #21402a;
+  --color-forest-900: #193122;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos para markdown rendered - nova paleta natural */
+.prose {
+  color: var(--color-earth-700);
+  line-height: 1.8;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 600;
+  color: var(--color-earth-800);
+}
+
+.prose h1 {
+  font-size: 2.25em;
+  letter-spacing: -0.02em;
+}
+
+.prose h2 {
+  font-size: 1.75em;
+  border-bottom: 2px solid var(--color-beige-200);
+  padding-bottom: 0.5em;
+}
+
+.prose h3 {
+  font-size: 1.375em;
+  color: var(--color-lilac-700);
+}
+
+.prose p {
+  margin-bottom: 1.25em;
+}
+
+.prose ul,
+.prose ol {
+  margin-left: 1.5em;
+  margin-bottom: 1.25em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+}
+
+.prose li::marker {
+  color: var(--color-mint-500);
+}
+
+.prose code {
+  background-color: var(--color-beige-100);
+  color: var(--color-earth-700);
+  padding: 0.2em 0.4em;
+  border-radius: 0.375em;
+  font-size: 0.9em;
+  font-family: monospace;
+}
+
+.prose pre {
+  background-color: var(--color-forest-800);
+  color: var(--color-ivory-100);
+  padding: 1.25em;
+  border-radius: 0.75em;
+  overflow-x: auto;
+  margin-bottom: 1.25em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--color-peach-400);
+  padding-left: 1.25em;
+  margin-left: 0;
+  margin-bottom: 1.25em;
+  color: var(--color-earth-600);
+  font-style: italic;
+  background: linear-gradient(to right, var(--color-peach-50), transparent);
+  padding: 1em 1em 1em 1.25em;
+  border-radius: 0 0.5em 0.5em 0;
+}
+
+.prose a {
+  color: var(--color-peach-600);
+  text-decoration: underline;
+  text-decoration-color: var(--color-lilac-300);
+  text-underline-offset: 0.15em;
+  transition: color 0.2s ease;
+}
+
+.prose a:hover {
+  color: var(--color-peach-700);
+  text-decoration-color: var(--color-peach-500);
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75em;
+  margin: 1.5em 0;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+
+/* Animações sutis */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}

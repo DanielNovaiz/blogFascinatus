@@ -1,0 +1,737 @@
+# Guia Completo: Skills, Rules e Workflows para Cascade no Windsurf
+
+O Cascade é o coração do Windsurf, permitindo que você automatize fluxos de trabalho complexos através de skills, rules e workflows bem estruturados. Este guia combina boas práticas com referência técnica completa.
+
+## Índice
+
+1. [Skills: As Capacidades do Cascade](#skills)
+2. [Rules: Padrões e Restrições](#rules)
+3. [Workflows: Orquestrando Automações](#workflows)
+4. [Boas Práticas](#boas-práticas)
+5. [Exemplos Práticos](#exemplos-práticos)
+
+---
+
+## Skills: As Capacidades do Cascade {#skills}
+
+Skills são as unidades básicas de funcionalidade no Cascade. Elas definem o que o assistente **pode fazer**.
+
+### Anatomia de uma Skill
+
+```yaml
+name: "skill-name"
+description: "Descrição clara e concisa do que a skill faz"
+version: "1.0.0"
+triggers:
+  - "Quando usar esta skill"
+  - "Padrões de linguagem natural"
+when_not_to_use:
+  - "Cenários onde a skill não se aplica"
+  - "Limitações importantes"
+instructions:
+  - "Passo 1 do procedimento"
+  - "Passo 2 do procedimento"
+  - "Passo 3 do procedimento"
+examples:
+  - input: "Exemplo de entrada"
+    output: "Resultado esperado"
+```
+
+### Categorias de Skills
+
+#### 1. **Code Skills** (Desenvolvimento)
+Habilidades para gerar, refatorar e otimizar código.
+
+**Exemplos:**
+- `code-generation`: Gerar código novo baseado em requisitos
+- `refactoring`: Melhorar qualidade do código existente
+- `testing`: Criar testes automatizados
+- `documentation`: Gerar documentação técnica
+- `debug`: Diagnosticar e corrigir bugs
+
+**Melhor Prática:** Sempre especifique a linguagem de programação e o contexto do projeto (framework, padrão arquitetural).
+
+#### 2. **Reasoning Skills** (Raciocínio)
+Habilidades para análise profunda e tomada de decisão.
+
+**Exemplos:**
+- `architectural-analysis`: Analisar decisões arquiteturais
+- `performance-analysis`: Avaliar desempenho de código
+- `security-review`: Identificar vulnerabilidades
+- `cost-optimization`: Otimizar recursos
+- `trade-off-analysis`: Avaliar alternativas
+
+**Melhor Prática:** Sempre justifique as recomendações com dados e contexto.
+
+#### 3. **Integration Skills** (Integração)
+Habilidades para conectar sistemas e ferramentas.
+
+**Exemplos:**
+- `git-integration`: Operações com repositório
+- `api-integration`: Trabalhar com APIs externas
+- `database-operations`: CRUD e otimizações
+- `deployment`: CI/CD e deployment
+- `monitoring`: Observabilidade e alertas
+
+**Melhor Prática:** Sempre inclua tratamento de erros e fallback strategies.
+
+#### 4. **Documentation Skills** (Documentação)
+Habilidades para criar documentação clara e útil.
+
+**Exemplos:**
+- `api-documentation`: Documentar APIs
+- `architecture-documentation`: Documentar design de sistema
+- `user-guide-creation`: Criar guias para usuários
+- `readme-generation`: Gerar READMEs
+- `changelog-creation`: Manter histórico de mudanças
+
+**Melhor Prática:** Use exemplos reais e mantenha a documentação atualizada.
+
+### Boas Práticas para Skills
+
+✅ **DO:**
+- Descrever claramente quando usar a skill
+- Listar cenários onde NÃO deve ser usada
+- Incluir exemplos práticos
+- Manter descrições concisas mas detalhadas
+- Especificar contexto técnico (versões, frameworks, etc)
+
+❌ **DON'T:**
+- Criar skills muito genéricas
+- Omitir limitações e edge cases
+- Misturar múltiplas responsabilidades em uma skill
+- Usar linguagem vaga ou imprecisa
+- Ignorar o contexto do projeto
+
+---
+
+## Rules: Padrões e Restrições {#rules}
+
+Rules definem **como** o assistente deve behave e **quais são os limites** de suas ações.
+
+### Tipos de Rules
+
+#### 1. **Style Rules** (Estilo)
+Definem consistência de código e formatação.
+
+```yaml
+style-rule:
+  name: "coding-standards"
+  applies_to: ["Python", "JavaScript"]
+  patterns:
+    - naming: "snake_case para variáveis e funções"
+    - indentation: "4 espaços"
+    - line_length: "máximo 88 caracteres (Black formatter)"
+    - imports: "imports em ordem alfabética"
+  exceptions:
+    - "Variáveis de classe podem usar UPPER_CASE"
+```
+
+#### 2. **Architecture Rules** (Arquitetura)
+Definem padrões estruturais e organizacionais.
+
+```yaml
+architecture-rule:
+  name: "layered-architecture"
+  layers:
+    - presentation: "Controllers, Views, UI"
+    - business: "Services, Business Logic"
+    - persistence: "Repositories, Data Access"
+    - domain: "Models, Entities"
+  restrictions:
+    - "Camadas superiores podem chamar inferiores"
+    - "Camadas inferiores nunca chamam superiores"
+    - "Services não devem conhecer Controllers"
+```
+
+#### 3. **Security Rules** (Segurança)
+Definem diretrizes de segurança e conformidade.
+
+```yaml
+security-rule:
+  name: "data-protection"
+  requirements:
+    - "Senhas nunca em logs"
+    - "APIs precisam de autenticação"
+    - "Inputs sempre validados"
+    - "SQL sempre com prepared statements"
+  forbidden:
+    - "Hard-coded credentials"
+    - "Eval ou exec dinâmico"
+    - "Desserialização não verificada"
+```
+
+#### 4. **Performance Rules** (Desempenho)
+Definem limites e otimizações esperadas.
+
+```yaml
+performance-rule:
+  name: "optimization-targets"
+  targets:
+    - "Queries: máximo 1 round trip por request"
+    - "APIs: resposta < 200ms (p95)"
+    - "Bundle: < 100kb gzipped"
+    - "Cache: TTL mínimo 5 minutos"
+  monitoring:
+    - "APM integrado"
+    - "Alertas em degradação"
+```
+
+#### 5. **Domain Rules** (Domínio)
+Definem regras específicas do negócio.
+
+```yaml
+domain-rule:
+  name: "business-logic"
+  rules:
+    - "Usuários só veem dados próprios"
+    - "Transações precisam de aprovação acima de $1000"
+    - "Relatórios gerados diariamente às 2am"
+    - "Backup: full diário, incremental a cada hora"
+```
+
+### Estrutura Recomendada de Rules
+
+```
+rules/
+├── security/
+│   ├── authentication.md
+│   ├── authorization.md
+│   └── data-protection.md
+├── architecture/
+│   ├── layering.md
+│   ├── dependencies.md
+│   └── patterns.md
+├── code-quality/
+│   ├── naming.md
+│   ├── complexity.md
+│   └── testing.md
+├── performance/
+│   ├── optimization.md
+│   ├── caching.md
+│   └── monitoring.md
+└── domain/
+    ├── business-logic.md
+    └── compliance.md
+```
+
+### Boas Práticas para Rules
+
+✅ **DO:**
+- Ser específico e mensurável
+- Documentar o "por quê" atrás de cada rule
+- Incluir exemplos de violações
+- Definir exceções claramente
+- Revisar regularmente
+
+❌ **DON'T:**
+- Criar regras muito restritivas
+- Deixar ambiguidades
+- Misturar responsabilidades
+- Ignorar contexto de negócio
+- Manter rules desatualizadas
+
+---
+
+## Workflows: Orquestrando Automações {#workflows}
+
+Workflows combinam skills e rules para executar processos complexos de forma automática e consistente.
+
+### Anatomia de um Workflow
+
+```yaml
+workflow:
+  name: "feature-development-workflow"
+  description: "Fluxo completo do desenvolvimento de uma feature"
+  version: "1.0.0"
+  triggers:
+    - event: "pull_request_opened"
+    - command: "/dev-workflow"
+  steps:
+    - step_1:
+        name: "Code Review"
+        skill: "code-review"
+        rules: ["security-rules", "style-rules"]
+        inputs:
+          - code: "${PR.files}"
+          - context: "${PROJECT.context}"
+        outputs:
+          - review_result: "PASS|FAIL|NEEDS_CHANGES"
+        on_failure: "request_changes"
+    
+    - step_2:
+        name: "Generate Tests"
+        skill: "testing"
+        depends_on: "step_1"
+        condition: "${step_1.review_result == 'PASS'}"
+        inputs:
+          - coverage_target: "80%"
+        outputs:
+          - test_files: "generated"
+    
+    - step_3:
+        name: "Performance Analysis"
+        skill: "performance-analysis"
+        rules: ["performance-rules"]
+        depends_on: "step_2"
+        parallel_allowed: false
+    
+    - step_4:
+        name: "Documentation"
+        skill: "documentation"
+        depends_on: ["step_2", "step_3"]
+  
+  success_criteria:
+    - "Todos os testes passam"
+    - "Performance dentro dos limites"
+    - "Documentação atualizada"
+  
+  notifications:
+    - on_completion: "Slack"
+    - on_failure: "Email"
+```
+
+### Padrões de Workflows
+
+#### 1. **Sequential Workflow** (Sequencial)
+Passos executam em ordem rigorosa.
+
+```yaml
+sequential:
+  steps:
+    - step_1: "Gerar código"
+    - step_2: "Executar testes" # Aguarda step_1
+    - step_3: "Deploy" # Aguarda step_2
+```
+
+#### 2. **Parallel Workflow** (Paralelo)
+Múltiplos passos executam simultaneamente.
+
+```yaml
+parallel:
+  group_1: # Executa em paralelo
+    - "Executar testes unitários"
+    - "Análise estática"
+    - "Security scan"
+  join_point: "Todos precisam passar para continuar"
+  step_2: "Deploy"
+```
+
+#### 3. **Conditional Workflow** (Condicional)
+Caminho varia baseado em condições.
+
+```yaml
+conditional:
+  if: "${environment == 'production'}"
+    then:
+      - "Execute smoke tests"
+      - "Verificar backups"
+      - "Deploy com blue-green"
+    else:
+      - "Deploy direto em staging"
+```
+
+#### 4. **Loop Workflow** (Iterativo)
+Repetir até condição ser atendida.
+
+```yaml
+loop:
+  for_each: "${changed_files}"
+  do:
+    - "Executar linters"
+    - "Gerar relatório"
+  until: "${all_files_compliant}"
+```
+
+#### 5. **Approval Workflow** (Com Aprovação)
+Requer intervenção humana em pontos críticos.
+
+```yaml
+approval:
+  steps:
+    - step_1: "Gerar mudanças"
+    - approval_gate:
+        approvers: ["lead", "security-team"]
+        timeout: "24h"
+        escalation: "product-manager"
+    - step_2: "Deploy aprovado"
+```
+
+### Exemplos de Workflows Comuns
+
+#### **Feature Development Workflow**
+```
+Novo Branch
+    ↓
+Desenvolvimento (Skill: code-generation)
+    ↓
+Code Review (Skill: code-review, Rule: style-rules)
+    ↓
+Testes (Skill: testing)
+    ↓
+Performance Check (Skill: performance-analysis)
+    ↓
+Documentação (Skill: documentation)
+    ↓
+PR Review (Human Approval)
+    ↓
+Merge & Deploy
+```
+
+#### **Bug Fix Workflow**
+```
+Issue Criada
+    ↓
+Análise (Skill: architectural-analysis)
+    ↓
+Identificar Root Cause (Skill: debug)
+    ↓
+Implementar Fix (Skill: code-generation)
+    ↓
+Testes de Regressão (Skill: testing)
+    ↓
+Deploy em Staging
+    ↓
+Validação (Human)
+    ↓
+Deploy em Production
+```
+
+#### **Refactoring Workflow**
+```
+Código Legado Identificado
+    ↓
+Análise de Impacto (Skill: architectural-analysis)
+    ↓
+Refactoring (Skill: refactoring)
+    ↓
+Testes Completos (Skill: testing)
+    ↓
+Performance Baseline (Skill: performance-analysis)
+    ↓
+Code Review (Rule: architecture-rules)
+    ↓
+Documentação de Mudanças (Skill: documentation)
+    ↓
+Merge Gradual
+```
+
+### Boas Práticas para Workflows
+
+✅ **DO:**
+- Manter workflows legíveis e bem documentados
+- Usar nomes descritivos para steps
+- Implementar tratamento de erros robusto
+- Incluir rollback strategies
+- Monitorar e alertar sobre falhas
+- Versionizar workflows
+- Testar workflows em staging antes de produção
+
+❌ **DON'T:**
+- Workflows muito complexos (máximo ~10 steps)
+- Múltiplas aprovações sem necessidade
+- Long-running steps sem checkpoints
+- Dependências ocultas entre steps
+- Sem documentação de casos de falha
+- Mudar workflows em produção sem versionamento
+
+---
+
+## Boas Práticas {#boas-práticas}
+
+### 1. **Organização e Estrutura**
+
+```
+.windsurf/
+├── skills/
+│   ├── code/
+│   │   ├── generation.md
+│   │   ├── refactoring.md
+│   │   └── testing.md
+│   ├── reasoning/
+│   │   ├── analysis.md
+│   │   └── architecture.md
+│   └── integration/
+│       └── deployment.md
+├── rules/
+│   ├── security.md
+│   ├── performance.md
+│   ├── architecture.md
+│   └── style.md
+└── workflows/
+    ├── feature-dev.yaml
+    ├── bug-fix.yaml
+    └── release.yaml
+```
+
+### 2. **Versionamento**
+
+```yaml
+metadata:
+  version: "1.2.0" # Semver
+  last_updated: "2024-04-23"
+  updated_by: "team-lead"
+  breaking_changes: "Nenhuma"
+  migration_guide: "URL"
+```
+
+### 3. **Documentation**
+
+Cada skill, rule e workflow deve ter:
+- ✅ Descrição clara
+- ✅ Quando usar / Quando não usar
+- ✅ Exemplos práticos
+- ✅ Limitações conhecidas
+- ✅ Links para recursos relacionados
+
+### 4. **Testing & Validation**
+
+```yaml
+validation:
+  automated:
+    - "Syntax check"
+    - "Schema validation"
+    - "Cross-reference verification"
+  manual:
+    - "Code review"
+    - "Team approval"
+  test_environments:
+    - "Staging"
+    - "QA"
+    - "Production (gradual rollout)"
+```
+
+### 5. **Governance**
+
+- **Proprietário**: Quem é responsável por manter?
+- **Reviewers**: Quem aprova mudanças?
+- **SLA**: Quanto tempo para atualizar após mudança requisitada?
+- **Sunset Policy**: Quando remover skills/rules desatualizadas?
+
+### 6. **Monitoramento e Feedback**
+
+```yaml
+monitoring:
+  metrics:
+    - "Skill execution time"
+    - "Success rate"
+    - "Error types"
+  alerts:
+    - "High failure rate (>5%)"
+    - "Performance degradation"
+    - "Unused skills (>30 dias)"
+  feedback_loop:
+    - "Revisar logs regularmente"
+    - "Coletar feedback do time"
+    - "Iterar baseado em métricas"
+```
+
+---
+
+## Exemplos Práticos {#exemplos-práticos}
+
+### Exemplo 1: Skill para Code Review
+
+```markdown
+# Code Review Skill
+
+## Descrição
+Realiza revisão automática de código analisando qualidade, segurança e aderência a padrões.
+
+## Quando Usar
+- Pull request aberto
+- Código pronto para review
+- Mudanças em arquivos críticos
+
+## Quando NÃO Usar
+- Código ainda em desenvolvimento
+- WIP (Work in Progress)
+- Mudanças documentação apenas
+
+## Procedimento
+1. Analisar estrutura e padrões
+2. Verificar segurança
+3. Revisar performance
+4. Validar testes
+5. Gerar relatório
+
+## Exemplos
+### Input
+```
+PR: Add user authentication
+Files: auth.py, auth_test.py
+Diff: +150 lines
+```
+
+### Output
+```
+✅ Code Structure: PASS
+⚠️ Security: 2 warnings
+   - Weak password hashing
+   - Missing input validation
+✅ Performance: PASS
+✅ Tests: PASS (95% coverage)
+
+Resultado: NEEDS_CHANGES
+```
+
+## Integração com Rules
+- security-rules
+- style-rules
+- testing-rules
+```
+
+### Exemplo 2: Rule para Performance
+
+```markdown
+# Performance Rule
+
+## Descrição
+Define limites e objetivos de performance para código novo.
+
+## Aplicabilidade
+- Todas as camadas da aplicação
+- APIs, Services, Database queries
+
+## Regras
+
+### APIs
+- Resposta: < 200ms (p95)
+- Cache: TTL mínimo 5 min
+- Conexões: Pool máx 50
+
+### Database
+- Queries: < 100ms
+- Índices: Em chaves de busca
+- N+1: Proibido
+
+### Frontend
+- Bundle: < 100kb gzipped
+- TTI: < 3s em 3G
+- FCP: < 1.5s
+
+## Medição
+```bash
+# Local
+npm run perf-test
+
+# Production
+curl https://api/metrics
+```
+
+## Exceções
+- Relatórios pesados: até 5s
+- Processos batch: sem limite
+```
+
+### Exemplo 3: Workflow para Release
+
+```yaml
+name: "release-workflow"
+version: "1.0.0"
+
+triggers:
+  - tag: "v*.*.*"
+  - command: "/release"
+
+steps:
+  step_1:
+    name: "Validate Version"
+    skill: "version-validation"
+    inputs:
+      - version: "${TAG}"
+      - last_release: "${GIT.last_tag}"
+    on_failure: "abort"
+
+  step_2:
+    name: "Generate Changelog"
+    skill: "changelog-generation"
+    inputs:
+      - from_tag: "${GIT.last_tag}"
+      - to_tag: "${TAG}"
+
+  step_3:
+    name: "Build Artifacts"
+    skill: "build"
+    inputs:
+      - environment: "production"
+    outputs:
+      - artifacts_path: "${BUILD.output}"
+
+  step_4:
+    name: "Security Scan"
+    skill: "security-scan"
+    inputs:
+      - artifacts: "${step_3.artifacts_path}"
+    rules: ["security-rules"]
+
+  step_5:
+    name: "Performance Test"
+    skill: "performance-test"
+    inputs:
+      - baseline: "last_release"
+    condition: "${step_4.result == 'PASS'}"
+
+  step_6:
+    name: "Create Release"
+    skill: "github-release"
+    inputs:
+      - version: "${TAG}"
+      - changelog: "${step_2.changelog}"
+    depends_on: ["step_4", "step_5"]
+
+  step_7:
+    name: "Deploy to Production"
+    skill: "deployment"
+    inputs:
+      - environment: "production"
+      - strategy: "blue-green"
+    approval_required: true
+    approvers: ["devops-team", "product-lead"]
+
+success_criteria:
+  - "Todos os testes passam"
+  - "Security scan com zero críticos"
+  - "Performance dentro dos limites"
+  - "Release criada com changelog"
+
+notifications:
+  - event: "success"
+    channel: "slack#releases"
+    message: "🚀 Release ${TAG} deployed!"
+  
+  - event: "failure"
+    channel: "slack#devops"
+    message: "❌ Release ${TAG} failed at ${failed_step}"
+```
+
+---
+
+## Checklist de Implementação
+
+Ao implementar skills, rules e workflows no seu projeto:
+
+- [ ] Estrutura de diretórios criada
+- [ ] Skills documentadas com exemplos
+- [ ] Rules definidas e validadas
+- [ ] Workflows testados em staging
+- [ ] Integração com CI/CD
+- [ ] Monitoramento configurado
+- [ ] Time treinado
+- [ ] Documentação publicada
+- [ ] Feedback loop estabelecido
+- [ ] Versionamento em prática
+
+---
+
+## Recursos Adicionais
+
+- **Documentação Oficial do Windsurf**: https://windsurf.ai/docs
+- **Cascade Reference**: https://windsurf.ai/cascade
+- **Community Workflows**: https://github.com/windsurf-community
+
+---
+
+**Última atualização**: Abril 2024  
+**Versão**: 1.0.0  
+**Mantido por**: Seu Time
