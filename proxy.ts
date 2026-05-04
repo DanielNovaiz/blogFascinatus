@@ -1,35 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
+import { verifySessionToken } from '@/lib/services/admin-auth.service';
 
 const PUBLIC_PATHS = ['/admin/login', '/api/admin/session'];
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public paths through immediately - no auth check
-  if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
+  if (shouldAllowPublicPath(pathname)) {
     return NextResponse.next();
   }
 
-  // Only protect /admin/* routes
-  if (!pathname.startsWith('/admin')) {
+  if (!isAdminRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // Auth check for protected admin routes
+  const isAuthenticated = await verifyAuthentication(request);
+  
+  if (!isAuthenticated) {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
+  }
+
+  return NextResponse.next();
+}
+
+function shouldAllowPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.some(path => pathname.startsWith(path));
+}
+
+function isAdminRoute(pathname: string): boolean {
+  return pathname.startsWith('/admin');
+}
+
+async function verifyAuthentication(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get('adminSession')?.value;
+  
   if (!token) {
-    return NextResponse.redirect(new URL('/admin/login', request.url));
+    return false;
   }
 
-  // Verify JWT
-  try {
-    const secret = new TextEncoder().encode(process.env.ADMIN_JWT_SECRET);
-    await jwtVerify(token, secret);
-    return NextResponse.next();
-  } catch {
-    return NextResponse.redirect(new URL('/admin/login', request.url));
-  }
+  const admin = await verifySessionToken(token);
+  return admin !== null;
 }
 
 export const config = {
